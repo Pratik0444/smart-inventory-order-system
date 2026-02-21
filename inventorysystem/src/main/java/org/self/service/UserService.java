@@ -4,6 +4,9 @@ package org.self.service;
 import org.self.dto.UserDto;
 import org.self.entity.User;
 import org.self.repository.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService{
 	private final UserRepository userRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
 	
@@ -37,10 +40,20 @@ public class UserService {
 		user.setName(userDto.getUsername());
 		user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 		user.setEmail(userDto.getEmail());
-		user.setRole(userDto.getRole());
+		user.setRole("ROLE_USER");
 	return userRepository.save(user);
-		
+	
 	   
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		// TODO Auto-generated method stub
+		User user = userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("User not found with email: "+ email));
+		return org.springframework.security.core.userdetails.User.withUsername(user.getEmail())
+				.password(user.getPassword())
+				.authorities(user.getRole())
+				.build();
 	}
 	
 }
