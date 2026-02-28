@@ -2,6 +2,7 @@ package org.self.service;
 
 
 import org.self.dto.UserDto;
+import org.self.entity.Role;
 import org.self.entity.User;
 import org.self.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,7 +41,7 @@ public class UserService implements UserDetailsService{
 		user.setName(userDto.getUsername());
 		user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 		user.setEmail(userDto.getEmail());
-		user.setRole("ROLE_USER");
+		user.setRole(Role.USER);
 	return userRepository.save(user);
 	
 	   
@@ -52,7 +53,7 @@ public class UserService implements UserDetailsService{
 		User user = userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("User not found with email: "+ email));
 		return org.springframework.security.core.userdetails.User.withUsername(user.getEmail())
 				.password(user.getPassword())
-				.authorities(user.getRole())
+				.authorities("ROLE_" + user.getRole().name())
 				.build();
 	}
 	
