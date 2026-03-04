@@ -73,6 +73,9 @@ public class SecurityConfig {
 		     http.authorizeHttpRequests(request -> request
 		             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 		             .requestMatchers("/user/register", "/auth/login").permitAll()
+		             .requestMatchers(HttpMethod.POST, "/product/**").hasRole("ADMIN")
+		             .requestMatchers(HttpMethod.DELETE, "/product/**").hasRole("ADMIN")
+		             .requestMatchers(HttpMethod.GET, "/product/**").hasAnyRole("USER", "ADMIN")
 		             .anyRequest().authenticated());
 
 		     http.httpBasic(customizer -> customizer.disable());
