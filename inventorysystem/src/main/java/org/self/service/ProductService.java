@@ -34,15 +34,30 @@ public class ProductService {
  return productRepo.save(product);
  }
  
- public Page<Product> getProducts(int page, int size , String sortBy){
+ public Page<Product> getProducts(int page, int size , String sortBy , String name){
 
-	    Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-
+//	    Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+	 Pageable pageable; 
+	    if (sortBy != null && !sortBy.isBlank() && !sortBy.isEmpty()) {
+	        pageable = PageRequest.of(page, size, Sort.by(sortBy));
+	    } else {
+	        pageable = PageRequest.of(page, size);
+	    }
+   if(name != null && !name.isEmpty()) {
+	   return productRepo.findByNameContainingIgnoreCase(name,pageable);
+   }
 	    return productRepo.findAll(pageable);
 	}
  
  public List<Product> getAllProducts(){
 	 return productRepo.findAll();
+ } 
+ public List<Product> searchProduct(String name){
+	 return productRepo.findByNameContainingIgnoreCase(name);
+ }
+ 
+ public List<Product> filterByPrice(double minPrice, double maxPrice){
+	 return productRepo.findByPriceBetween(minPrice, maxPrice);
  }
  
  public void deleteProduct(Long id) {

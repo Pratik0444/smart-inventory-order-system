@@ -45,6 +45,11 @@ public class ProductController {
    public ResponseEntity<List<Product>> getAll(){
 	   return ResponseEntity.ok(productService.getAllProducts());
    }
+   
+   @GetMapping("/search")
+   public ResponseEntity<List<Product>> searchProduct(@RequestParam String name){
+	   return ResponseEntity.ok(productService.searchProduct(name));
+   }
    @PutMapping("/{id}")
    public ResponseEntity<ApiResponse<Product>> updateProduct(@PathVariable Long id , @Valid @RequestBody ProductDto productDto){
 	  Product updateProduct = productService.updateProduct(id, productDto);
@@ -53,14 +58,22 @@ public class ProductController {
 			  );
    }
    
+   @GetMapping("/filter")
+    public ResponseEntity<List<Product>> filterProducts(
+    		@RequestParam double minPrice,
+    		@RequestParam double maxPrice){
+	   return ResponseEntity.ok(productService.filterByPrice(minPrice, maxPrice));
+   }
+    		
    @GetMapping("/paginated")
    public ResponseEntity<Page<Product>> getProducts(
            @RequestParam int page,
            @RequestParam int size,
-           @RequestParam(required = false) String sortBY
+           @RequestParam(required = false) String sortBy,
+           @RequestParam(required = false) String name
 		   ){
 
-       return ResponseEntity.ok(productService.getProducts(page, size, sortBY));
+       return ResponseEntity.ok(productService.getProducts(page, size, sortBy,name));
    }
    
    @DeleteMapping("/{id}")
