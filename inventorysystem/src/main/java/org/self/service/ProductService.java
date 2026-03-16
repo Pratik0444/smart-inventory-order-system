@@ -19,12 +19,30 @@ import lombok.RequiredArgsConstructor;
 public class ProductService {
  private final ProductRepo productRepo;
  
- public Product addProduct(ProductDto productDto) {
-	 Product product = new Product();
-	 product.setName(productDto.getName());
-	 product.setQuantity(productDto.getQuantity());
-	 product.setPrice(productDto.getPrice());
-	 return productRepo.save(product);
+ public ProductDto addProduct(ProductDto productDto) {
+//	 Product product = new Product();
+//	 product.setName(productDto.getName());
+//	 product.setQuantity(productDto.getQuantity());
+//	 product.setPrice(productDto.getPrice());
+//	 return productRepo.save(product);
+
+	    // DTO → Entity
+	    Product product = new Product();
+	    product.setName(productDto.getName());
+	    product.setQuantity(productDto.getQuantity());
+	    product.setPrice(productDto.getPrice());
+
+	    // Save to DB
+	    Product savedProduct = productRepo.save(product);
+
+	    // Entity → DTO
+	    ProductDto dto = new ProductDto();
+	    dto.setId(savedProduct.getId());
+	    dto.setName(savedProduct.getName());
+	    dto.setQuantity(savedProduct.getQuantity());
+	    dto.setPrice(savedProduct.getPrice());
+
+	    return dto;
  }
  
  public Product updateProduct(long id,ProductDto productDto) {

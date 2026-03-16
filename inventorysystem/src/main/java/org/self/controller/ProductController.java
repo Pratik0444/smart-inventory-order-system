@@ -10,6 +10,7 @@ import org.self.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,13 +35,22 @@ public class ProductController {
    private final ProductService productService;
 
 
-   
+//   
+//   @PostMapping
+//   public ResponseEntity<ApiResponse<ProductDto>> addProduct(@Valid @RequestBody ProductDto productDto){
+//	   ProductDto saveProduct = productService.addProduct(productDto);
+//	   return ResponseEntity.ok(
+//			   new ApiResponse<>("Product created successfully", saveProduct));
+//   }
    @PostMapping
-   public ResponseEntity<ApiResponse<Product>> addProduct(@Valid @RequestBody ProductDto productDto){
-	   Product saveProduct = (productService.addProduct(productDto));
-	   return ResponseEntity.ok(
-			   new ApiResponse<>("Product created successfully", saveProduct));
-   }
+   public ResponseEntity<ApiResponse<ProductDto>> addProduct(@Valid @RequestBody ProductDto productDto){
+
+	    ProductDto savedProduct = productService.addProduct(productDto);
+
+	    return ResponseEntity.status(HttpStatus.CREATED)
+	            .body(new ApiResponse<>("Product created successfully", savedProduct));
+	}
+   
    @GetMapping
    public ResponseEntity<List<Product>> getAll(){
 	   return ResponseEntity.ok(productService.getAllProducts());
