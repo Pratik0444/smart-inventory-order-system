@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.self.dto.ProductDto;
 import org.self.entity.Product;
+import org.self.exception.ResourceNotFoundException;
 import org.self.repository.ProductRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,6 +59,11 @@ public class ProductService {
  
  public List<Product> filterByPrice(double minPrice, double maxPrice){
 	 return productRepo.findByPriceBetween(minPrice, maxPrice);
+ }
+ 
+ public Product getProductById(Long id) {
+	return productRepo.findById(id)
+			.orElseThrow(()-> new ResourceNotFoundException("Product not found with id: " + id));
  }
  
  public void deleteProduct(Long id) {
