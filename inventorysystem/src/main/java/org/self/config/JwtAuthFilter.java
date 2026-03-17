@@ -31,31 +31,72 @@ public class JwtAuthFilter extends OncePerRequestFilter{
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
       String path= request.getServletPath();
       return path.equals("/auth") || path.equals("/user/register");
+  
     }
 
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		
-		String authHeader = request.getHeader("Authorization");
-		String token = null;
-		String username = null;
-		
-		if(authHeader != null && authHeader.startsWith("Bearer ")) {
-			token = authHeader.substring(7);
-			username = jwtService.extractEmail(token);
-		}
-		
-		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-			if(jwtService.validateToken(token, userDetails)) {
-				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails , null ,userDetails.getAuthorities());
-			    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-			    SecurityContextHolder.getContext().setAuthentication(authToken);
-			}
-		}
-		filterChain.doFilter(request, response);
-	}
+	protected void doFilterInternal(HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
+throws ServletException, IOException {
+
+String authHeader = request.getHeader("Authorization");
+String token = null;
+String username = null;
+
+try {
+if (authHeader != null && authHeader.startsWith("Bearer ")) {
+token = authHeader.substring(7);
+username = jwtService.extractEmail(token);
+}
+
+if (username != null &&
+SecurityContextHolder.getContext().getAuthentication() == null) {
+
+UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+if (jwtService.validateToken(token, userDetails)) {
+
+UsernamePasswordAuthenticationToken authToken =
+     new UsernamePasswordAuthenticationToken(
+             userDetails,
+             null,
+             userDetails.getAuthorities()
+     );
+
+authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+SecurityContextHolder.getContext().setAuthentication(authToken);
+}
+}
+
+} catch (Exception e) {
+System.out.println("JWT Error: " + e.getMessage());
+}
+
+filterChain.doFilter(request, response);
+}
+//	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+//			throws ServletException, IOException {
+//		// TODO Auto-generated method stub
+//		
+//		String authHeader = request.getHeader("Authorization");
+//		String token = null;
+//		String username = null;
+//		
+//		if(authHeader != null && authHeader.startsWith("Bearer ")) {
+//			token = authHeader.substring(7);
+//			username = jwtService.extractEmail(token);
+//		}
+//		
+//		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+//			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+//			if(jwtService.validateToken(token, userDetails)) {
+//				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails , null ,userDetails.getAuthorities());
+//			    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//			    SecurityContextHolder.getContext().setAuthentication(authToken);
+//			}
+//		}
+//		filterChain.doFilter(request, response);
+//	}
 }

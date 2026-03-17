@@ -20,19 +20,19 @@ public class UserService implements UserDetailsService{
 	private final BCryptPasswordEncoder passwordEncoder;
 	
 	public User registerUser(UserDto userDto) {
-		
-		  if (userDto.getUsername() == null || userDto.getUsername().trim().isEmpty()) {
-	            throw new IllegalArgumentException("Name cannot be empty");
-	        }
-
-	        if (userDto.getEmail() == null || userDto.getEmail().trim().isEmpty()) {
-	            throw new IllegalArgumentException("Email cannot be empty");
-	        }
-
-	        if (userDto.getPassword() == null || userDto.getPassword().trim().isEmpty()) {
-	            throw new IllegalArgumentException("Password cannot be empty");
-	        }
-	        
+//		
+//		  if (userDto.getUsername() == null || userDto.getUsername().trim().isEmpty()) {
+//	            throw new IllegalArgumentException("Name cannot be empty");
+//	        }
+//
+//	        if (userDto.getEmail() == null || userDto.getEmail().trim().isEmpty()) {
+//	            throw new IllegalArgumentException("Email cannot be empty");
+//	        }
+//
+//	        if (userDto.getPassword() == null || userDto.getPassword().trim().isEmpty()) {
+//	            throw new IllegalArgumentException("Password cannot be empty");
+//	        }
+//	        
 	        if(userRepository.existsByEmail(userDto.getEmail())) {
 				throw new RuntimeException("Email already exists");
 			}
@@ -45,7 +45,9 @@ public class UserService implements UserDetailsService{
 	return userRepository.save(user);
 	
 	   
-	}
+  }
+	
+	
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

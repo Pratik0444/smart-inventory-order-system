@@ -1,5 +1,6 @@
 package org.self.service;
 
+import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,16 +19,21 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JWTService {
-   private String secretKey = "";
-   public JWTService() {
-	   try {
-		KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
-		SecretKey sk = keyGen.generateKey();
-		secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-	} catch (Exception e) {
-		e.printStackTrace();
+//   private String secretKey = "";
+	private static final String SECRET = "mysecretkeymysecretkeymysecretkey12345";
+
+	private SecretKey getSignKey() {
+	    return Keys.hmacShaKeyFor(SECRET.getBytes());
 	}
-   }
+//   public JWTService() {
+//	   try {
+//		KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+//		SecretKey sk = keyGen.generateKey();
+//		secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
+//	} catch (Exception e) {
+//		e.printStackTrace();
+//	}
+//   }
    
    public String generateToken(String name, String role) {
 	   Map<String, Object> claims = new HashMap<>();
@@ -40,13 +46,13 @@ public class JWTService {
     		   .issuedAt(new Date(System.currentTimeMillis()))
     		   .expiration(new Date(System.currentTimeMillis()+ 1000 * 60 * 60))
     		   .and()
-    		   .signWith(getKey())
+    		   .signWith(getSignKey())
                .compact();	   
    }
-   private SecretKey getKey() {
-       byte[] keyBytes = Base64.getDecoder().decode(secretKey);
-       return Keys.hmacShaKeyFor(keyBytes);
-   }
+//   private SecretKey getKey() {
+//       byte[] keyBytes = Base64.getDecoder().decode(secretKey);
+//       return Keys.hmacShaKeyFor(keyBytes);
+//   }
    
    public String extractEmail(String token) {
 	   return extractAllClaims(token).getSubject();
@@ -58,7 +64,7 @@ public class JWTService {
    
    private Claims extractAllClaims(String token) {
 	   return Jwts.parser()
-			   .verifyWith(getKey())
+			   .verifyWith(getSignKey())
 			   .build()
 			   .parseSignedClaims(token)
 			   .getPayload();
